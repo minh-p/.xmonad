@@ -83,10 +83,13 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     [ ((modm .|. shiftMask, xK_Return), spawn $ XMonad.terminal conf)
 
     , ((modm,               xK_b     ), spawn myWebBrowser)
-    , ((modm,               xK_d     ), spawn "discord")
+    , ((modm,               xK_d     ), spawn "discord-canary")
 
     -- launch dmenu
-    , ((modm,               xK_p     ), spawn "rofi")
+    , ((modm,               xK_p     ), spawn "rofi -show")
+
+    , ((modm .|. controlMask, xK_Up     ), spawn "amixer sset 'Master' 10%+")
+    , ((modm .|. controlMask, xK_Down     ), spawn "amixer sset 'Master' 10%-")
 
     -- launch gmrun
     , ((modm .|. shiftMask, xK_p     ), spawn "gmrun")

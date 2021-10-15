@@ -51,7 +51,7 @@ myBorderWidth   = 2
 -- "windows key" is usually mod4Mask.
 --
 myModMask       = mod4Mask
-myWebBrowser = "microsoft-edge-dev"
+myWebBrowser = "firefox"
 
 -- The default number of workspaces (virtual screens) and their names.
 -- By default we use numeric strings, but any string may be used as a
@@ -83,13 +83,13 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     [ ((modm .|. shiftMask, xK_Return), spawn $ XMonad.terminal conf)
 
     , ((modm,               xK_b     ), spawn myWebBrowser)
-    , ((modm,               xK_d     ), spawn "discord-canary")
+    , ((modm,               xK_d     ), spawn "discord")
 
     -- launch dmenu
     , ((modm,               xK_p     ), spawn "rofi -show")
 
-    , ((modm .|. controlMask, xK_Up     ), spawn "amixer sset 'Master' 10%+")
-    , ((modm .|. controlMask, xK_Down     ), spawn "amixer sset 'Master' 10%-")
+    , ((modm .|. controlMask, xK_Up     ), spawn "amixer sset 'Master' 2%+")
+    , ((modm .|. controlMask, xK_Down     ), spawn "amixer sset 'Master' 2%-")
 
     -- launch gmrun
     , ((modm .|. shiftMask, xK_p     ), spawn "gmrun")

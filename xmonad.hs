@@ -12,6 +12,7 @@ import XMonad.Util.SpawnOnce
 -- Hooks
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.DynamicLog
+import XMonad.Hooks.ManageHelpers (isFullscreen, doFullFloat, doCenterFloat)
 
 -- Actions
 
@@ -62,7 +63,7 @@ myWebBrowser = "firefox"
 --
 -- > workspaces = ["web", "irc", "code" ] ++ map show [4..9]
 --
-myWorkspaces    = ["human","comms","machine","runner","jumper","sitter","sleeper","hummer","greeters"]
+myWorkspaces    = ["human","comms","machine","thunderbird","runner","jumper","sitter","sleeper","hummer"]
 myWorkspaceIndices = M.fromList $ zipWith (,) myWorkspaces [1..] -- (,) == \x y -> (x,y)
 
 clickable ws = "<action=xdotool key super+"++show i++">"++ws++"</action>"
@@ -237,10 +238,15 @@ myLayout = avoidStruts $ mySpacing 8 (tiled ||| Mirror tiled ||| Full)
 -- 'className' and 'resource' are used below.
 --
 myManageHook = composeAll
-    [ className =? "MPlayer"        --> doFloat
-    , className =? "Gimp"           --> doFloat
+    [ className =? "Gimp"           --> doFloat
     , resource  =? "desktop_window" --> doIgnore
-    , resource  =? "kdesktop"       --> doIgnore ]
+    , resource  =? "kdesktop"       --> doIgnore
+    , className =? "discord"        --> doShift ( myWorkspaces !! 1 )
+    , className =? "Discord"        --> doShift ( myWorkspaces !! 1 )
+    , (className =? "firefox" <&&> resource =? "Dialog") --> doFloat  -- Float Firefox Dialog
+    , isFullscreen -->  doFullFloat
+    ]
+
 
 ------------------------------------------------------------------------
 -- Event handling
@@ -320,7 +326,7 @@ defaults xmproc0 = def {
 
       -- hooks, layouts
         layoutHook         = myLayout,
-        manageHook         = myManageHook,
+        manageHook         = myManageHook <+> manageDocks,
         handleEventHook    = myEventHook,
         logHook            = myLogHook xmproc0,
         startupHook        = myStartupHook

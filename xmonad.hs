@@ -283,6 +283,9 @@ myLogHook xmproc0 = dynamicLogWithPP $ xmobarPP { ppOutput = hPutStrLn xmproc0
 myStartupHook = do
     spawnOnce "picom &"
     spawnOnce "~/.config/wallpaper-set.sh"
+    -- Map keys to be faster (mainly for vim navigation)
+    spawn "xset r rate 300 40"
+    spawn "xmodmap -e 'clear Lock' -e 'keycode 0x42 = Escape'"
 
 ------------------------------------------------------------------------
 -- Now run xmonad with all the defaults we set up.

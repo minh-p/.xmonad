@@ -12,6 +12,7 @@ import XMonad.Util.SpawnOnce
 -- Hooks
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.DynamicLog
+import XMonad.Hooks.ManageHelpers (isFullscreen, doFullFloat, doCenterFloat)
 
 -- Actions
 
@@ -51,7 +52,7 @@ myBorderWidth   = 2
 -- "windows key" is usually mod4Mask.
 --
 myModMask       = mod4Mask
-myWebBrowser = "microsoft-edge-dev"
+myWebBrowser = "firefox"
 
 -- The default number of workspaces (virtual screens) and their names.
 -- By default we use numeric strings, but any string may be used as a
@@ -62,7 +63,7 @@ myWebBrowser = "microsoft-edge-dev"
 --
 -- > workspaces = ["web", "irc", "code" ] ++ map show [4..9]
 --
-myWorkspaces    = ["1","2","3","4","5","6","7","8","9"]
+myWorkspaces    = ["human","comms","machine","thunderbird","runner","jumper","sitter","sleeper","hummer"]
 myWorkspaceIndices = M.fromList $ zipWith (,) myWorkspaces [1..] -- (,) == \x y -> (x,y)
 
 clickable ws = "<action=xdotool key super+"++show i++">"++ws++"</action>"
@@ -88,8 +89,8 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     -- launch dmenu
     , ((modm,               xK_p     ), spawn "rofi -show")
 
-    , ((modm .|. controlMask, xK_Up     ), spawn "amixer sset 'Master' 10%+")
-    , ((modm .|. controlMask, xK_Down     ), spawn "amixer sset 'Master' 10%-")
+    , ((modm .|. controlMask, xK_Up     ), spawn "amixer sset 'Master' 2%+")
+    , ((modm .|. controlMask, xK_Down     ), spawn "amixer sset 'Master' 2%-")
 
     -- launch gmrun
     , ((modm .|. shiftMask, xK_p     ), spawn "gmrun")
@@ -237,10 +238,15 @@ myLayout = avoidStruts $ mySpacing 8 (tiled ||| Mirror tiled ||| Full)
 -- 'className' and 'resource' are used below.
 --
 myManageHook = composeAll
-    [ className =? "MPlayer"        --> doFloat
-    , className =? "Gimp"           --> doFloat
+    [ className =? "Gimp"           --> doFloat
     , resource  =? "desktop_window" --> doIgnore
-    , resource  =? "kdesktop"       --> doIgnore ]
+    , resource  =? "kdesktop"       --> doIgnore
+    , className =? "discord"        --> doShift ( myWorkspaces !! 1 )
+    , className =? "Discord"        --> doShift ( myWorkspaces !! 1 )
+    , (className =? "firefox" <&&> resource =? "Dialog") --> doFloat  -- Float Firefox Dialog
+    , isFullscreen -->  doFullFloat
+    ]
+
 
 ------------------------------------------------------------------------
 -- Event handling
@@ -261,10 +267,10 @@ myEventHook = mempty
 --
 myLogHook xmproc0 = dynamicLogWithPP $ xmobarPP { ppOutput = hPutStrLn xmproc0
               , ppCurrent = xmobarColor "#c792ea" "" . wrap "<box type=Bottom width=2 mb=2 color=#c792ea>" "</box>"         -- Current workspace
-              , ppVisible = xmobarColor "#c792ea" "" . clickable              -- Visible but not current workspace
+              , ppVisible = xmobarColor "#618C98" "" . clickable              -- Visible but not current workspace
               , ppHidden = xmobarColor "#82AAFF" "" . wrap "<box type=Top width=2 mt=2 color=#82AAFF>" "</box>" . clickable -- Hidden workspaces
-              , ppHiddenNoWindows = xmobarColor "#82AAFF" ""  . clickable     -- Hidden workspaces (no windows)
-              , ppTitle = xmobarColor "#b3afc2" "" . shorten 60               -- Title of active window
+              --, ppHiddenNoWindows = xmobarColor "#82AAFF" ""  . clickable     -- Hidden workspaces (no windows)
+              , ppTitle = xmobarColor "#CED8FF" "" . shorten 60               -- Title of active window
               , ppSep =  "<fc=#666666> <fn=1>|</fn> </fc>"                    -- Separator character
               , ppUrgent = xmobarColor "#C45500" "" . wrap "!" "!"            -- Urgent workspace
               , ppExtras  = [windowCount]                                     -- # of windows current workspace
@@ -283,6 +289,9 @@ myLogHook xmproc0 = dynamicLogWithPP $ xmobarPP { ppOutput = hPutStrLn xmproc0
 myStartupHook = do
     spawnOnce "picom &"
     spawnOnce "~/.config/wallpaper-set.sh"
+    -- Map keys to be faster (mainly for vim navigation)
+    spawn "xset r rate 300 40"
+    spawn "xmodmap -e 'clear Lock' -e 'keycode 0x42 = Escape'"
 
 ------------------------------------------------------------------------
 -- Now run xmonad with all the defaults we set up.
@@ -317,7 +326,7 @@ defaults xmproc0 = def {
 
       -- hooks, layouts
         layoutHook         = myLayout,
-        manageHook         = myManageHook,
+        manageHook         = myManageHook <+> manageDocks,
         handleEventHook    = myEventHook,
         logHook            = myLogHook xmproc0,
         startupHook        = myStartupHook

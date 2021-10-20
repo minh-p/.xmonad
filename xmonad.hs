@@ -86,7 +86,10 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm,               xK_d     ), spawn "discord")
 
     -- launch dmenu
-    , ((modm,               xK_p     ), spawn "rofi")
+    , ((modm,               xK_p     ), spawn "rofi -show")
+
+    , ((modm .|. controlMask, xK_Up     ), spawn "amixer sset 'Master' 10%+")
+    , ((modm .|. controlMask, xK_Down     ), spawn "amixer sset 'Master' 10%-")
 
     -- launch gmrun
     , ((modm .|. shiftMask, xK_p     ), spawn "gmrun")
